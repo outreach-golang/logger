@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/outearch-golang/logger/extends"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"io"
@@ -71,8 +70,8 @@ func logger(configs *Config) (*zap.SugaredLogger, error) {
 		)
 	case AliLog:
 		core = zapcore.NewTee(
-			extends.WriteAliLog(configs.EnableLogLevel, encoder, configs),
-			extends.WriteDing(zap.ErrorLevel, encoder, configs),
+			WriteAliLog(configs.EnableLogLevel, encoder, configs),
+			WriteDing(zap.ErrorLevel, encoder, configs),
 		)
 	}
 

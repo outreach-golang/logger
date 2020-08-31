@@ -1,4 +1,4 @@
-package extends
+package logger
 
 import (
 	"fmt"
@@ -6,13 +6,12 @@ import (
 	"github.com/aliyun/aliyun-log-go-sdk/producer"
 	"github.com/gogo/protobuf/proto"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/outearch-golang/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"time"
 )
 
-func WriteAliLog(l zapcore.Level, z zapcore.Encoder, configs *logger.Config) zapcore.Core {
+func WriteAliLog(l zapcore.Level, z zapcore.Encoder, configs *Config) zapcore.Core {
 
 	r := &toAliLog{configs: configs}
 	r.initServ()
@@ -25,7 +24,7 @@ func WriteAliLog(l zapcore.Level, z zapcore.Encoder, configs *logger.Config) zap
 }
 
 type toAliLog struct {
-	configs *logger.Config
+	configs *Config
 	Client  *producer.Producer
 }
 

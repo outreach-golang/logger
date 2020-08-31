@@ -1,10 +1,9 @@
-package extends
+package logger
 
 import (
 	"bytes"
 	"context"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/outearch-golang/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -13,7 +12,7 @@ import (
 	"time"
 )
 
-func WriteDing(l zapcore.Level, z zapcore.Encoder, configs *logger.Config) zapcore.Core {
+func WriteDing(l zapcore.Level, z zapcore.Encoder, configs *Config) zapcore.Core {
 
 	r := &toDing{configs: configs}
 
@@ -25,7 +24,7 @@ func WriteDing(l zapcore.Level, z zapcore.Encoder, configs *logger.Config) zapco
 }
 
 type toDing struct {
-	configs *logger.Config
+	configs *Config
 }
 
 func (t *toDing) Write(p []byte) (n int, err error) {
@@ -38,7 +37,7 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 		sendDataTemplete = `
 #### 项目名称: ` + t.configs.ServerName + `
 > 错误信息: ` + tp + "\n" + `
-> 机器地址: ` + logger.LocalIP() + "\n" + `
+> 机器地址: ` + LocalIP() + "\n" + `
 > TraceId：` + tid + `
 > 时间 : ` + currentTime
 	)
