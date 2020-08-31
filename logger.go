@@ -20,9 +20,9 @@ const (
 	AliLog
 )
 
-var Logger *zap.Logger
+var GLogger *zap.Logger
 
-func NewLogger(ops ...Option) (*zap.SugaredLogger, error) {
+func NewLogger(ops ...Option) (*zap.Logger, error) {
 
 	config := DefaultConfig()
 
@@ -35,11 +35,16 @@ func NewLogger(ops ...Option) (*zap.SugaredLogger, error) {
 	}
 
 	Logger, err := logger(config)
+	if err != nil {
+		return nil, err
+	}
+
+	GLogger = Logger
 
 	return Logger, err
 }
 
-func logger(configs *Config) (*zap.SugaredLogger, error) {
+func logger(configs *Config) (*zap.Logger, error) {
 
 	encoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
 		MessageKey:  "msg",
@@ -77,7 +82,7 @@ func logger(configs *Config) (*zap.SugaredLogger, error) {
 
 	log := zap.New(core, zap.AddCaller(), zap.AddStacktrace(infoLevel))
 
-	return log.Sugar(), nil
+	return log, nil
 }
 
 func GetWriter(configs *Config) io.Writer {
@@ -100,7 +105,7 @@ func NewContext(ctx *gin.Context, fields ...zapcore.Field) {
 
 func WithContext(ctx *gin.Context) *zap.Logger {
 	if ctx == nil {
-		return Logger
+		return GLogger
 	}
 
 	l, _ := ctx.Get(strconv.Itoa(loggerKey))
@@ -111,5 +116,5 @@ func WithContext(ctx *gin.Context) *zap.Logger {
 		return ctxLogger
 	}
 
-	return Logger
+	return GLogger
 }
