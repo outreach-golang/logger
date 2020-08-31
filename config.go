@@ -57,6 +57,30 @@ func DefaultConfig() *Config {
 	return &c
 }
 
+func Source(s string) Option {
+	return func(config *Config) {
+		config.AliLog.Source = s
+	}
+}
+
+func Topic(s string) Option {
+	return func(config *Config) {
+		config.AliLog.Topic = s
+	}
+}
+
+func LogStore(s string) Option {
+	return func(config *Config) {
+		config.AliLog.LogStore = s
+	}
+}
+
+func Project(s string) Option {
+	return func(config *Config) {
+		config.AliLog.Project = s
+	}
+}
+
 func AccessKeyID(s string) Option {
 	return func(config *Config) {
 		config.AliLog.AccessKeyID = s
