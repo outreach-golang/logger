@@ -77,7 +77,7 @@ func msgSplit(b []byte) (rb string) {
 		return
 	}
 
-	return rb
+	return string(b)
 
 }
 
