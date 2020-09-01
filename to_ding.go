@@ -30,7 +30,7 @@ type toDing struct {
 func (t *toDing) Write(p []byte) (n int, err error) {
 
 	var (
-		tp               = string([]rune(string(p))[:500])
+		tp               = msgSplit(p)
 		tid              = tid(tp)
 		data             = make(map[string]string)
 		currentTime      = time.Now().Format("2006-01-02 15:04:05")
@@ -68,6 +68,17 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 		return 0, err
 	}
 	return 0, nil
+}
+
+func msgSplit(b []byte) (rb string) {
+
+	if len(b) >= 500 {
+		rb = string([]rune(string(b))[:500])
+		return
+	}
+
+	return rb
+
 }
 
 func tid(s string) string {
