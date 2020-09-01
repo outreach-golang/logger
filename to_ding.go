@@ -84,5 +84,10 @@ func msgSplit(b []byte) (rb string) {
 func tid(s string) string {
 	t := strings.Index(s, "/**")
 	t1 := strings.Index(s, "**/")
-	return s[t:t1]
+
+	if t == -1 || t1 == -1 {
+		return ""
+	}
+
+	return s[t+3 : t1]
 }
