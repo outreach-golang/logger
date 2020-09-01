@@ -17,6 +17,7 @@ type SaveLogForm int
 const (
 	loggerKey             = 0
 	File      SaveLogForm = iota
+	Ding
 	AliLog
 )
 
@@ -72,6 +73,10 @@ func logger(configs *Config) (*zap.Logger, error) {
 		infoWriter := GetWriter(configs)
 		core = zapcore.NewTee(
 			zapcore.NewCore(encoder, zapcore.AddSync(infoWriter), infoLevel),
+		)
+	case Ding:
+		core = zapcore.NewTee(
+			WriteDing(zap.ErrorLevel, encoder, configs),
 		)
 	case AliLog:
 		core = zapcore.NewTee(

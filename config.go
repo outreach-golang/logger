@@ -48,7 +48,7 @@ func DefaultConfig() *Config {
 
 	c.SaveLogAddr = File
 	c.EnableLogLevel = zapcore.InfoLevel
-	c.File.FilePath = "./logs/log_"
+	c.File.FilePath = "./logs/log"
 	c.File.FileMaxAge = time.Hour * 24 * 3
 	c.File.FileRotationTime = time.Hour * 24
 	c.AliLog.Source = LocalIP()
