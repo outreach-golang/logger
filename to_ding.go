@@ -8,7 +8,6 @@ import (
 	"go.uber.org/zap/zapcore"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -30,15 +29,16 @@ type toDing struct {
 func (t *toDing) Write(p []byte) (n int, err error) {
 
 	var (
-		tp               = msgSplit(p)
-		tid              = tid(tp)
+		ph               = msgToMap(p)
+		errorMsg         = msgSplit(ph["msg"].(string))
+		tid              = ph["msg"].(string)
 		data             = make(map[string]string)
 		currentTime      = time.Now().Format("2006-01-02 15:04:05")
 		sendDataTemplete = `
 #### 项目名称: ` + t.configs.ServerName + `
-> 错误信息: ` + tp + "\n" + `
+> 错误信息: ` + errorMsg + "\n" + `
 > 机器地址: ` + LocalIP() + "\n" + `
-> TraceId：` + tid + `
+> TraceId：` + tid + "\n" + `
 > 时间 : ` + currentTime
 	)
 
@@ -51,7 +51,7 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 
 	client := &http.Client{}
 
-	cxt, _ := context.WithTimeout(context.Background(), time.Second*5)
+	cxt, _ := context.WithTimeout(context.Background(), time.Second*2)
 
 	req, err := http.NewRequest("POST", t.configs.Ding.DingHost, bytes.NewBuffer(jsonData))
 
@@ -70,24 +70,20 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-func msgSplit(b []byte) (rb string) {
+func msgToMap(p []byte) (r map[string]interface{}) {
+	_ = jsoniter.Unmarshal(p, &r)
+	return
+}
 
-	if len(b) >= 500 {
-		rb = string([]rune(string(b))[:500])
+func msgSplit(msg string) (rb string) {
+
+	if len(msg) >= 500 {
+
+		rb = msg[:500]
+
 		return
 	}
 
-	return string(b)
+	return msg
 
-}
-
-func tid(s string) string {
-	t := strings.Index(s, "/**")
-	t1 := strings.Index(s, "**/")
-
-	if t == -1 || t1 == -1 {
-		return ""
-	}
-
-	return s[t+3 : t1]
 }
