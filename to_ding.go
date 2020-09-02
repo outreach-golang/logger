@@ -31,7 +31,7 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 	var (
 		ph               = msgToMap(p)
 		errorMsg         = msgSplit(ph["msg"].(string))
-		tid              = ph["msg"].(string)
+		tid              = ph["traceid"].(string)
 		data             = make(map[string]string)
 		currentTime      = time.Now().Format("2006-01-02 15:04:05")
 		sendDataTemplete = `
