@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/aliyun/aliyun-log-go-sdk/producer"
 	"github.com/gogo/protobuf/proto"
@@ -60,7 +59,6 @@ func (t *toAliLog) Write(p []byte) (n int, err error) {
 	log.Contents = content
 
 	err = t.Client.SendLog(t.configs.AliLog.Project, t.configs.AliLog.LogStore, t.configs.AliLog.Topic, t.configs.AliLog.Source, log)
-	fmt.Println("发送日志报错：", err)
 
 	return 0, nil
 }
