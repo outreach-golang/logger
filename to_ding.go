@@ -24,14 +24,17 @@ func WriteDing(l zapcore.Level, z zapcore.Encoder, configs *Config) zapcore.Core
 
 type toDing struct {
 	configs *Config
+	TraceId string `json:"traceid"`
+	Msg     string `json:"msg"`
 }
 
 func (t *toDing) Write(p []byte) (n int, err error) {
 
+	msgToMap(t, p)
+
 	var (
-		ph               = msgToMap(p)
-		errorMsg         = msgSplit(ph["msg"].(string))
-		tid              = ph["traceid"].(string)
+		errorMsg         = msgSplit(t.Msg)
+		tid              = t.TraceId
 		data             = make(map[string]string)
 		currentTime      = time.Now().Format("2006-01-02 15:04:05")
 		sendDataTemplete = `
@@ -70,8 +73,8 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 	return 0, nil
 }
 
-func msgToMap(p []byte) (r map[string]interface{}) {
-	_ = jsoniter.Unmarshal(p, &r)
+func msgToMap(t *toDing, p []byte) {
+	_ = jsoniter.Unmarshal(p, t)
 	return
 }
 
