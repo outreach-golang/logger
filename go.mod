@@ -1,4 +1,4 @@
-module github.com/outearch-golang/logger
+module github.com/outreach-golang/logger
 
 go 1.15
 
