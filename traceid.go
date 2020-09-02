@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -24,7 +25,8 @@ func ipTo16() string {
 	)
 
 	for _, v := range ips {
-		rs += fmt.Sprintf("%x", v)
+		i, _ := strconv.Atoi(v)
+		rs += fmt.Sprintf("%02x", i)
 	}
 
 	return rs
