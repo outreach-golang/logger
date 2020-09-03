@@ -30,6 +30,7 @@ type AliLogConfig struct {
 	LogStore        string
 	Topic           string
 	Source          string
+	LooKAddr        string
 }
 
 type DingConfig struct {
@@ -55,6 +56,12 @@ func DefaultConfig() *Config {
 	c.AliLog.Topic = ""
 
 	return &c
+}
+
+func LooKAddr(s string) Option {
+	return func(config *Config) {
+		config.AliLog.LooKAddr = s
+	}
 }
 
 func Source(s string) Option {
