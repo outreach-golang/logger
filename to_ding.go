@@ -41,7 +41,7 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 #### 项目名称: ` + t.configs.ServerName + `
 > 错误信息: ` + errorMsg + "\n" + `
 > 机器地址: ` + LocalIP() + "\n" + `
-> TraceId：https://sls.console.aliyun.com/lognext/project/test-prject-02/logsearch/test-log?traceid=` + tid + "\n" + `
+> TraceId：[` + tid + "](https://sls.console.aliyun.com/lognext/project/test-prject-02/logsearch/test-log?traceid=" + tid + ")\n" + `
 > 时间 : ` + currentTime
 	)
 
