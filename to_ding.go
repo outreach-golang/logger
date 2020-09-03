@@ -41,7 +41,7 @@ func (t *toDing) Write(p []byte) (n int, err error) {
 #### 项目名称: ` + t.configs.ServerName + `
 > 错误信息: ` + errorMsg + "\n" + `
 > 机器地址: ` + LocalIP() + "\n" + `
-> TraceId：[` + tid + "](" + t.configs.AliLog.LooKAddr + tid + ")\n" + `
+> TraceId：[` + tid + "](" + t.configs.AliLog.LooKAddr + ")\n" + `
 > 时间 : ` + currentTime
 	)
 
