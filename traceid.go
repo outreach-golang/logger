@@ -58,5 +58,5 @@ func incId() int {
 }
 
 func processId() int {
-	return os.Getppid()
+	return os.Getpid()
 }
