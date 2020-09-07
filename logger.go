@@ -1,13 +1,13 @@
 package logger
 
 import (
+	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"io"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -15,7 +15,8 @@ import (
 type SaveLogForm int
 
 const (
-	loggerKey             = 0
+	GinKey                = "gin_logger"
+	NormalKey             = "normal_logger"
 	File      SaveLogForm = iota
 	Ding
 	AliLog
@@ -104,21 +105,39 @@ func GetWriter(configs *Config) io.Writer {
 	return hook
 }
 
-func NewContext(ctx *gin.Context, fields ...zapcore.Field) {
-	ctx.Set(strconv.Itoa(loggerKey), WithContext(ctx).With(fields...))
+func NewContext(ctx context.Context, fields ...zapcore.Field) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	if gc, ok := ctx.(*gin.Context); ok {
+		gc.Set(GinKey, WithContext(ctx).With(fields...))
+	} else {
+		context.WithValue(ctx, NormalKey, WithContext(ctx).With(fields...))
+	}
+
 }
 
-func WithContext(ctx *gin.Context) *zap.Logger {
+func WithContext(ctx context.Context) *zap.Logger {
 	if ctx == nil {
 		return GLogger
 	}
 
-	l, _ := ctx.Get(strconv.Itoa(loggerKey))
+	if gc, ok := ctx.(*gin.Context); ok {
+		l, _ := gc.Get(GinKey)
 
-	ctxLogger, ok := l.(*zap.Logger)
+		logger, ok := l.(*zap.Logger)
 
-	if ok {
-		return ctxLogger
+		if ok {
+			return logger
+		}
+
+	} else {
+		logger, ok := ctx.Value(NormalKey).(*zap.Logger)
+
+		if ok {
+			return logger
+		}
 	}
 
 	return GLogger
