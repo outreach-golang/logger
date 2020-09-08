@@ -20,7 +20,7 @@ func (logger *GormLogger) Print(values ...interface{}) {
 			zap.String("params", fmt.Sprint(values[4])),
 			zap.String("rows.affected", fmt.Sprint(values[5])),
 			zap.String("file.with.line.num", values[1].(string)),
-			zap.String("sql.duration", values[2].(string)),
+			zap.String("sql.duration", fmt.Sprint(values[2].(time.Duration))),
 		)
 
 		if values[2].(time.Duration) >= 2000 {
