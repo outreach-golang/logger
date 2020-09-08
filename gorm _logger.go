@@ -1,0 +1,31 @@
+package logger
+
+import (
+	"context"
+	"go.uber.org/zap"
+	"time"
+)
+
+type GormLogger struct {
+}
+
+func (logger *GormLogger) Print(values ...interface{}) {
+
+	if values[0] == "sql" {
+		ctx := context.Background()
+		NewContext(
+			ctx,
+			zap.String("sql", values[3].(string)),
+			zap.String("params", values[4].(string)),
+			zap.String("rows.affected", values[5].(string)),
+			zap.String("file.with.line.num", values[1].(string)),
+			zap.String("sql.duration", values[2].(string)),
+		)
+
+		if values[2].(time.Duration) >= 2000 {
+			WithContext(ctx).Error("sql：**" + values[3].(string) + "** 过慢")
+		}
+
+	}
+
+}
