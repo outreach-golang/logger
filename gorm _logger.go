@@ -18,7 +18,7 @@ func (logger *GormLogger) Print(values ...interface{}) {
 			ctx,
 			zap.String("sql", values[3].(string)),
 			zap.String("params", fmt.Sprint(values[4])),
-			zap.String("rows.affected", values[5].(string)),
+			zap.String("rows.affected", fmt.Sprint(values[5])),
 			zap.String("file.with.line.num", values[1].(string)),
 			zap.String("sql.duration", values[2].(string)),
 		)
