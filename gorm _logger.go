@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"fmt"
 	"go.uber.org/zap"
 	"time"
 )
@@ -17,7 +18,7 @@ func (logger *GormLogger) Print(values ...interface{}) {
 			ctx,
 			zap.String("sql", values[3].(string)),
 			zap.String("params", values[4].(string)),
-			zap.Any("rows.affected", values[5]),
+			zap.Any("rows.affected", fmt.Sprint(values[5])),
 			zap.String("file.with.line.num", values[1].(string)),
 			zap.String("sql.duration", values[2].(string)),
 		)
