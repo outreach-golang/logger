@@ -105,27 +105,27 @@ func GetWriter(configs *Config) io.Writer {
 	return hook
 }
 
-func NewContext(ctx *context.Context, fields ...zapcore.Field) {
+func NewContext(ctx context.Context, fields ...zapcore.Field) context.Context {
 	if ctx == nil {
-		c := context.Background()
-		ctx = &c
+		ctx = context.Background()
 	}
 
-	if gc, ok := (*ctx).(*gin.Context); ok {
+	if gc, ok := ctx.(*gin.Context); ok {
 		gc.Set(GinKey, WithContext(ctx).With(fields...))
 	} else {
-		c := context.WithValue(*ctx, NormalKey, WithContext(ctx).With(fields...))
-		ctx = &c
+		ctx = context.WithValue(ctx, NormalKey, WithContext(ctx).With(fields...))
 	}
+
+	return ctx
 
 }
 
-func WithContext(ctx *context.Context) *zap.Logger {
+func WithContext(ctx context.Context) *zap.Logger {
 	if ctx == nil {
 		return GLogger
 	}
 
-	if gc, ok := (*ctx).(*gin.Context); ok {
+	if gc, ok := ctx.(*gin.Context); ok {
 		l, _ := gc.Get(GinKey)
 
 		logger, ok := l.(*zap.Logger)
@@ -135,7 +135,7 @@ func WithContext(ctx *context.Context) *zap.Logger {
 		}
 
 	} else {
-		logger, ok := (*ctx).Value(NormalKey).(*zap.Logger)
+		logger, ok := ctx.Value(NormalKey).(*zap.Logger)
 
 		if ok {
 			return logger

@@ -16,7 +16,7 @@ func (logger *GormLogger) Print(values ...interface{}) {
 	if values[0] == "sql" {
 		ctx := context.Background()
 		NewContext(
-			&ctx,
+			ctx,
 			zap.String("sql", values[3].(string)),
 			zap.String("params", fmt.Sprint(values[4])),
 			zap.String("rows.affected", fmt.Sprint(values[5])),
@@ -25,7 +25,7 @@ func (logger *GormLogger) Print(values ...interface{}) {
 		)
 
 		if values[2].(time.Duration) >= 2000 {
-			WithContext(&ctx).Error("sql：**" + values[3].(string) + "** 过慢")
+			WithContext(ctx).Error("sql：**" + values[3].(string) + "** 过慢")
 		}
 
 	}
@@ -38,7 +38,7 @@ func (logger *GormLogger) Print(values ...interface{}) {
 	switch values[0] {
 	case "sql":
 		NewContext(
-			&ctx,
+			ctx,
 			zap.String("traceid", traceId),
 			zap.String("sql", values[3].(string)),
 			zap.String("params", fmt.Sprint(values[4])),
@@ -48,19 +48,19 @@ func (logger *GormLogger) Print(values ...interface{}) {
 		)
 
 		if values[2].(time.Duration) >= (time.Millisecond * 2000) {
-			WithContext(&ctx).Error("**sql：" + values[3].(string) + "\n参数：" +
+			WithContext(ctx).Error("**sql：" + values[3].(string) + "\n参数：" +
 				fmt.Sprint(values[4]) + "\n耗时：[" + fmt.Sprint(values[2].(time.Duration)) + "]** 过慢")
 		}
 
 		break
 	case "log":
 		NewContext(
-			&ctx,
+			ctx,
 			zap.String("traceid", traceId),
 			zap.String("sql.error", values[2].(*mysql.MySQLError).Message),
 			zap.String("file.with.line.num", values[1].(string)),
 		)
-		WithContext(&ctx).Error("**" + values[2].(*mysql.MySQLError).Message + "**")
+		WithContext(ctx).Error("**" + values[2].(*mysql.MySQLError).Message + "**")
 		break
 	}
 
