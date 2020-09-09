@@ -113,7 +113,7 @@ func NewContext(ctx context.Context, fields ...zapcore.Field) {
 	if gc, ok := ctx.(*gin.Context); ok {
 		gc.Set(GinKey, WithContext(ctx).With(fields...))
 	} else {
-		context.WithValue(ctx, NormalKey, WithContext(ctx).With(fields...))
+		ctx = context.WithValue(ctx, NormalKey, WithContext(ctx).With(fields...))
 	}
 
 }
