@@ -9,9 +9,10 @@ import (
 )
 
 type GormLogger struct {
+	SlowSqlTime time.Duration
 }
 
-func (logger *GormLogger) Print(values ...interface{}) {
+func (l *GormLogger) Print(values ...interface{}) {
 
 	var (
 		ctx     = context.Background()
@@ -30,9 +31,12 @@ func (logger *GormLogger) Print(values ...interface{}) {
 			zap.String("sql.duration", fmt.Sprint(values[2].(time.Duration))),
 		)
 
-		if values[2].(time.Duration) >= (time.Millisecond * 2000) {
+		if values[2].(time.Duration) >= (time.Millisecond * l.SlowSqlTime) {
 			WithContext(newContext).Error("**sql：" + values[3].(string) + "\n参数：" +
 				fmt.Sprint(values[4]) + "\n耗时：[" + fmt.Sprint(values[2].(time.Duration)) + "]** 过慢")
+		} else {
+			WithContext(newContext).Info("sql：" + values[3].(string) + "\n参数：" +
+				fmt.Sprint(values[4]) + "\n耗时：[" + fmt.Sprint(values[2].(time.Duration)) + "]")
 		}
 
 		break
