@@ -31,7 +31,7 @@ func (l *GormLogger) Print(values ...interface{}) {
 			zap.String("sql.duration", fmt.Sprint(values[2].(time.Duration))),
 		)
 
-		if values[2].(time.Duration) >= (time.Millisecond * l.SlowSqlTime) {
+		if l.SlowSqlTime > 0 && values[2].(time.Duration) >= (time.Millisecond*l.SlowSqlTime) {
 			WithContext(newContext).Error("**sql：" + values[3].(string) + "\n参数：" +
 				fmt.Sprint(values[4]) + "\n耗时：[" + fmt.Sprint(values[2].(time.Duration)) + "]** 过慢")
 		} else {
