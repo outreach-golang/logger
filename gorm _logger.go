@@ -41,10 +41,20 @@ func (l *GormLogger) Print(values ...interface{}) {
 
 		break
 	case "log":
+
+		var sqlErrorField string
+		switch values[2].(type) {
+		case *mysql.MySQLError:
+			sqlErrorField = values[2].(*mysql.MySQLError).Message
+			break
+		default:
+			sqlErrorField = values[2].(error).Error()
+		}
+
 		newContext := NewContext(
 			ctx,
 			zap.String("traceid", traceId),
-			zap.String("sql.error", values[2].(*mysql.MySQLError).Message),
+			zap.String("sql.error", sqlErrorField),
 			zap.String("file.with.line.num", values[1].(string)),
 		)
 		WithContext(newContext).Error("**" + values[2].(*mysql.MySQLError).Message + "**")
