@@ -57,7 +57,7 @@ func (l *GormLogger) Print(values ...interface{}) {
 			zap.String("sql.error", sqlErrorField),
 			zap.String("file.with.line.num", values[1].(string)),
 		)
-		WithContext(newContext).Error("**" + values[2].(*mysql.MySQLError).Message + "**")
+		WithContext(newContext).Error("**" + sqlErrorField + "**")
 		break
 	}
 
