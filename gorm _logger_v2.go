@@ -14,7 +14,7 @@ type GormLoggerV2 struct {
 }
 
 func (l *GormLoggerV2) LogMode(level gl.LogLevel) gl.Interface {
-	panic("implement me")
+	return l.LogMode(level)
 }
 
 func (l *GormLoggerV2) Info(ctx context.Context, s string, i ...interface{}) {
