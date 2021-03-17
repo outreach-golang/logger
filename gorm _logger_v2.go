@@ -11,10 +11,11 @@ import (
 
 type GormLoggerV2 struct {
 	SlowSqlTime time.Duration
+	LogLevel    gl.LogLevel
 }
 
 func (l *GormLoggerV2) LogMode(level gl.LogLevel) gl.Interface {
-	return l.LogMode(level)
+	return l.LogMode(l.LogLevel)
 }
 
 func (l *GormLoggerV2) Info(ctx context.Context, s string, i ...interface{}) {
