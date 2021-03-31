@@ -21,7 +21,7 @@ type GormTracePlugsConfig struct {
 }
 
 type TracePlugin struct {
-	Config GormTracePlugsConfig
+	Config *GormTracePlugsConfig
 }
 
 func (op *TracePlugin) Name() string {
