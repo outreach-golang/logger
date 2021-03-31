@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"github.com/outreach-golang/logger/gorm_V2"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	gl "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
@@ -47,7 +48,10 @@ func (op *TracePlugin) Initialize(db *gorm.DB) (err error) {
 	return
 }
 
-var _ gorm.Plugin = &TracePlugin{}
+var (
+	ins             = &TracePlugin{}
+	_   gorm.Plugin = ins
+)
 
 func before(db *gorm.DB) {
 	db.InstanceSet(startTime, time.Now())
@@ -55,7 +59,7 @@ func before(db *gorm.DB) {
 }
 
 func after(db *gorm.DB) {
-	//_ctx := db.Statement.Context
+	_ctx := db.Statement.Context
 	//ctx, ok := _ctx.(core.Context)
 	//if !ok {
 	//	return
@@ -79,7 +83,12 @@ func after(db *gorm.DB) {
 	sqlInfo.Stack = utils.FileWithLineNum()
 	sqlInfo.Rows = db.Statement.RowsAffected
 	sqlInfo.CostSeconds = time.Since(ts).Seconds()
-	//ctx.Trace().AppendSQL(sqlInfo)
+	sqlInfo.Model = db.Statement.Model
+
+	if time.Duration(sqlInfo.CostSeconds) >= ins.Config.SlowSqlTime {
+		WithContext(_ctx).Error(sql+"-----过慢", zap.Any("sqlQuery", sqlInfo))
+	}
+
 	fmt.Printf("%#v", sqlInfo)
 	return
 }
