@@ -10,12 +10,7 @@ import (
 	"time"
 )
 
-type Writer interface {
-	Printf(string, ...interface{})
-}
-
 type GormLoggerV2 struct {
-	Writer
 	SlowSqlTime time.Duration
 	LogLevel    gl.LogLevel
 }
@@ -28,8 +23,7 @@ func (l *GormLoggerV2) LogMode(level gl.LogLevel) gl.Interface {
 
 func (l *GormLoggerV2) Info(ctx context.Context, s string, i ...interface{}) {
 	if l.LogLevel >= gl.Info {
-		fmt.Print(ctx)
-		l.Printf(s, append([]interface{}{utils.FileWithLineNum()}, i...)...)
+		fmt.Print(ctx, s, utils.FileWithLineNum(), i)
 	}
 }
 
