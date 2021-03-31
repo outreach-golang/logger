@@ -21,9 +21,9 @@ type GormLoggerV2 struct {
 }
 
 func (l *GormLoggerV2) LogMode(level gl.LogLevel) gl.Interface {
-	newLogger := *l
+	newLogger := &GormLoggerV2{}
 	newLogger.LogLevel = level
-	return &newLogger
+	return newLogger
 }
 
 func (l *GormLoggerV2) Info(ctx context.Context, s string, i ...interface{}) {
