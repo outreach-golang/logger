@@ -6,10 +6,16 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 	gl "gorm.io/gorm/logger"
+	"gorm.io/gorm/utils"
 	"time"
 )
 
+type Writer interface {
+	Printf(string, ...interface{})
+}
+
 type GormLoggerV2 struct {
+	Writer
 	SlowSqlTime time.Duration
 	LogLevel    gl.LogLevel
 }
@@ -21,7 +27,10 @@ func (l *GormLoggerV2) LogMode(level gl.LogLevel) gl.Interface {
 }
 
 func (l *GormLoggerV2) Info(ctx context.Context, s string, i ...interface{}) {
-	panic("implement me")
+	if l.LogLevel >= gl.Info {
+		fmt.Print(ctx)
+		l.Printf(s, append([]interface{}{utils.FileWithLineNum()}, i...)...)
+	}
 }
 
 func (l *GormLoggerV2) Warn(ctx context.Context, s string, i ...interface{}) {
