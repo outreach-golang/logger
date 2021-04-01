@@ -62,6 +62,12 @@ func after(db *gorm.DB) {
 		return
 	}
 
+	if db.Error != nil {
+		WithContext(_ctx).Error(db.Error.Error())
+
+		return
+	}
+
 	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
 
 	sqlInfo := &gorm_V2.SQL{}
