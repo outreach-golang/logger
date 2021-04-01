@@ -1,11 +1,9 @@
 package logger
 
 import (
-	"fmt"
 	"github.com/outreach-golang/logger/gorm_V2"
-	"go.uber.org/zap"
+	"go.uber.org/zap/buffer"
 	"gorm.io/gorm"
-	gl "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 	"time"
 )
@@ -14,16 +12,10 @@ const (
 	callBackBeforeName = "core:before"
 	callBackAfterName  = "core:after"
 	startTime          = "_start_time"
+	SlowSqlTime        = 0
 )
 
-type GormTracePlugsConfig struct {
-	SlowSqlTime time.Duration
-	LogLevel    gl.LogLevel
-}
-
-type TracePlugin struct {
-	Config *GormTracePlugsConfig
-}
+type TracePlugin struct{}
 
 func (op *TracePlugin) Name() string {
 	return "tracePlugin"
@@ -49,8 +41,7 @@ func (op *TracePlugin) Initialize(db *gorm.DB) (err error) {
 }
 
 var (
-	ins             = &TracePlugin{}
-	_   gorm.Plugin = ins
+	_ gorm.Plugin = &TracePlugin{}
 )
 
 func before(db *gorm.DB) {
@@ -60,10 +51,6 @@ func before(db *gorm.DB) {
 
 func after(db *gorm.DB) {
 	_ctx := db.Statement.Context
-	//ctx, ok := _ctx.(core.Context)
-	//if !ok {
-	//	return
-	//}
 
 	_ts, isExist := db.InstanceGet(startTime)
 	if !isExist {
@@ -83,12 +70,17 @@ func after(db *gorm.DB) {
 	sqlInfo.Stack = utils.FileWithLineNum()
 	sqlInfo.Rows = db.Statement.RowsAffected
 	sqlInfo.CostSeconds = time.Since(ts).Seconds()
-	sqlInfo.Model = db.Statement.Model
+	sqlInfo.Table = db.Statement.Table
 
-	if time.Duration(sqlInfo.CostSeconds) >= ins.Config.SlowSqlTime {
-		WithContext(_ctx).Error(sql+"-----过慢", zap.Any("sqlQuery", sqlInfo))
+	if time.Duration(sqlInfo.CostSeconds) >= SlowSqlTime {
+		wbuff := buffer.Buffer{}
+		wbuff.AppendString(sql)
+		wbuff.AppendString("-----执行时间：【 ")
+		wbuff.AppendFloat(sqlInfo.CostSeconds, 64)
+		wbuff.AppendString(" 秒】")
+
+		WithContext(_ctx).Error(wbuff.String())
 	}
 
-	fmt.Printf("%#v", sqlInfo)
 	return
 }
