@@ -12,7 +12,7 @@ const (
 	callBackBeforeName = "core:before"
 	callBackAfterName  = "core:after"
 	startTime          = "_start_time"
-	SlowSqlTime        = 0.5
+	SlowSqlTime        = 0
 )
 
 type TracePlugin struct{}
