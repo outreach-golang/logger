@@ -81,9 +81,9 @@ func after(db *gorm.DB) {
 	if sqlInfo.CostSeconds >= SlowSqlTime {
 		wbuff := buffer.Buffer{}
 		wbuff.AppendString(sql)
-		wbuff.AppendString("-----`执行时间：`【 ")
+		wbuff.AppendString("-----\\`执行时间：【 ")
 		wbuff.AppendFloat(sqlInfo.CostSeconds, 64)
-		wbuff.AppendString(" 秒】`")
+		wbuff.AppendString(" 秒】\\`")
 
 		WithContext(_ctx).Error(wbuff.String())
 	}
