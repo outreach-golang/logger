@@ -84,7 +84,7 @@ func after(db *gorm.DB) {
 		wbuff.AppendString("-----**执行时间：【 ")
 		wbuff.AppendFloat(sqlInfo.CostSeconds, 64)
 		wbuff.AppendString(" 秒】**")
-
+		//
 		WithContext(_ctx).Error(wbuff.String())
 	}
 
