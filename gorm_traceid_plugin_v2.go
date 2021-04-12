@@ -64,11 +64,8 @@ func after(db *gorm.DB) {
 
 	switch db.Error {
 	case nil:
-
-	case gorm.ErrRecordNotFound:
-		WithContext(_ctx).Info(db.Error.Error())
 	default:
-		WithContext(_ctx).Error(db.Error.Error())
+		WithContext(_ctx).Info(db.Error.Error())
 	}
 
 	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
