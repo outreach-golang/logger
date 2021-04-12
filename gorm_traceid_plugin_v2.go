@@ -63,6 +63,8 @@ func after(db *gorm.DB) {
 	}
 
 	switch db.Error {
+	case nil:
+
 	case gorm.ErrRecordNotFound:
 		WithContext(_ctx).Info(db.Error.Error())
 	default:
