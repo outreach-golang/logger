@@ -2,9 +2,7 @@ package logger
 
 import (
 	"errors"
-	"fmt"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/outreach-golang/logger/gorm_V2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/buffer"
 	"gorm.io/gorm"
@@ -55,9 +53,6 @@ func before(db *gorm.DB) {
 
 func after(db *gorm.DB) {
 	_ctx := db.Statement.Context
-	fmt.Println(_ctx)
-	fmt.Printf("#%v", _ctx)
-	fmt.Println()
 
 	_ts, isExist := db.InstanceGet(startTime)
 	if !isExist {
@@ -71,13 +66,21 @@ func after(db *gorm.DB) {
 
 	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
 
-	sqlInfo := &gorm_V2.SQL{}
-	sqlInfo.Timestamp = CSTLayoutString()
-	sqlInfo.SQL = sql
-	sqlInfo.Stack = utils.FileWithLineNum()
-	sqlInfo.Rows = db.Statement.RowsAffected
-	sqlInfo.CostSeconds = time.Since(ts).Seconds()
-	sqlInfo.Table = db.Statement.Table
+	sqlInfo := make(map[string]interface{})
+	sqlInfo["timestamp"] = CSTLayoutString()
+	sqlInfo["SQL"] = sql
+	sqlInfo["Stack"] = utils.FileWithLineNum()
+	sqlInfo["Rows"] = db.Statement.RowsAffected
+	sqlInfo["CostSeconds"] = time.Since(ts).Seconds()
+	sqlInfo["Table"] = db.Statement.Table
+
+	//sqlInfo := &gorm_V2.SQL{}
+	//sqlInfo.Timestamp = CSTLayoutString()
+	//sqlInfo.SQL = sql
+	//sqlInfo.Stack = utils.FileWithLineNum()
+	//sqlInfo.Rows = db.Statement.RowsAffected
+	//sqlInfo.CostSeconds = time.Since(ts).Seconds()
+	//sqlInfo.Table = db.Statement.Table
 
 	switch db.Error {
 	case nil:
@@ -91,11 +94,11 @@ func after(db *gorm.DB) {
 		}
 	}
 
-	if sqlInfo.CostSeconds >= SlowSqlTime {
+	if sqlInfo["CostSeconds"].(float64) >= SlowSqlTime {
 		wbuff := buffer.Buffer{}
 		wbuff.AppendString(sql)
 		wbuff.AppendString("-----**执行时间：【 ")
-		wbuff.AppendFloat(sqlInfo.CostSeconds, 64)
+		wbuff.AppendFloat(sqlInfo["CostSeconds"].(float64), 64)
 		wbuff.AppendString(" 秒】**")
 
 		WithContext(_ctx).Error(wbuff.String())
