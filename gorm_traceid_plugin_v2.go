@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"errors"
 	"fmt"
 	"github.com/outreach-golang/logger/gorm_V2"
 	"go.uber.org/zap"
@@ -79,10 +80,12 @@ func after(db *gorm.DB) {
 
 	switch db.Error {
 	case nil:
-	case gorm.ErrRecordNotFound:
-		WithContext(_ctx).Info(db.Error.Error(), zap.Any("sql.info", sqlInfo))
 	default:
-		WithContext(_ctx).Error(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+			WithContext(_ctx).Info(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+		} else {
+			WithContext(_ctx).Error(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+		}
 	}
 
 	if sqlInfo.CostSeconds >= SlowSqlTime {
