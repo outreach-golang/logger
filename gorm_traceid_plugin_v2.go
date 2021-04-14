@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"github.com/outreach-golang/logger/gorm_V2"
 	"go.uber.org/zap/buffer"
 	"gorm.io/gorm"
@@ -51,6 +52,9 @@ func before(db *gorm.DB) {
 
 func after(db *gorm.DB) {
 	_ctx := db.Statement.Context
+	fmt.Println(_ctx)
+	fmt.Printf("#%v", _ctx)
+	fmt.Println()
 
 	_ts, isExist := db.InstanceGet(startTime)
 	if !isExist {
@@ -64,8 +68,10 @@ func after(db *gorm.DB) {
 
 	switch db.Error {
 	case nil:
-	default:
+	case gorm.ErrRecordNotFound:
 		WithContext(_ctx).Info(db.Error.Error())
+	default:
+		WithContext(_ctx).Error(db.Error.Error())
 	}
 
 	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
