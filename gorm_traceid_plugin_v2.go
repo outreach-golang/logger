@@ -68,11 +68,11 @@ func after(db *gorm.DB) {
 
 	sqlInfo := make(map[string][]interface{})
 	sqlInfo["timestamp"][0] = CSTLayoutString()
-	sqlInfo["SQL"][1] = sql
-	sqlInfo["Stack"][2] = utils.FileWithLineNum()
-	sqlInfo["Rows"][3] = db.Statement.RowsAffected
-	sqlInfo["CostSeconds"][4] = time.Since(ts).Seconds()
-	sqlInfo["Table"][5] = db.Statement.Table
+	sqlInfo["SQL"][0] = sql
+	sqlInfo["Stack"][0] = utils.FileWithLineNum()
+	sqlInfo["Rows"][0] = db.Statement.RowsAffected
+	sqlInfo["CostSeconds"][0] = time.Since(ts).Seconds()
+	sqlInfo["Table"][0] = db.Statement.Table
 
 	//sqlInfo := &gorm_V2.SQL{}
 	//sqlInfo.Timestamp = CSTLayoutString()
@@ -94,11 +94,11 @@ func after(db *gorm.DB) {
 		}
 	}
 
-	if sqlInfo["CostSeconds"][4].(float64) >= SlowSqlTime {
+	if sqlInfo["CostSeconds"][0].(float64) >= SlowSqlTime {
 		wbuff := buffer.Buffer{}
 		wbuff.AppendString(sql)
 		wbuff.AppendString("-----**执行时间：【 ")
-		wbuff.AppendFloat(sqlInfo["CostSeconds"][4].(float64), 64)
+		wbuff.AppendFloat(sqlInfo["CostSeconds"][0].(float64), 64)
 		wbuff.AppendString(" 秒】**")
 
 		WithContext(_ctx).Error(wbuff.String())
