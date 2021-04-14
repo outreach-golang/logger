@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"github.com/outreach-golang/logger/gorm_V2"
+	"go.uber.org/zap"
 	"go.uber.org/zap/buffer"
 	"gorm.io/gorm"
 	"gorm.io/gorm/utils"
@@ -66,14 +67,6 @@ func after(db *gorm.DB) {
 		return
 	}
 
-	switch db.Error {
-	case nil:
-	case gorm.ErrRecordNotFound:
-		WithContext(_ctx).Info(db.Error.Error())
-	default:
-		WithContext(_ctx).Error(db.Error.Error())
-	}
-
 	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
 
 	sqlInfo := &gorm_V2.SQL{}
@@ -83,6 +76,14 @@ func after(db *gorm.DB) {
 	sqlInfo.Rows = db.Statement.RowsAffected
 	sqlInfo.CostSeconds = time.Since(ts).Seconds()
 	sqlInfo.Table = db.Statement.Table
+
+	switch db.Error {
+	case nil:
+	case gorm.ErrRecordNotFound:
+		WithContext(_ctx).Info(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+	default:
+		WithContext(_ctx).Error(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+	}
 
 	if sqlInfo.CostSeconds >= SlowSqlTime {
 		wbuff := buffer.Buffer{}
