@@ -75,14 +75,6 @@ func after(db *gorm.DB) {
 	sqlInfo.Set("CostSeconds", time.Since(ts).Seconds())
 	sqlInfo.Set("Table", db.Statement.Table)
 
-	//sqlInfo := &gorm_V2.SQL{}
-	//sqlInfo.Timestamp = CSTLayoutString()
-	//sqlInfo.SQL = sql
-	//sqlInfo.Stack = utils.FileWithLineNum()
-	//sqlInfo.Rows = db.Statement.RowsAffected
-	//sqlInfo.CostSeconds = time.Since(ts).Seconds()
-	//sqlInfo.Table = db.Statement.Table
-
 	switch db.Error {
 	case nil:
 	default:
@@ -91,7 +83,7 @@ func after(db *gorm.DB) {
 		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
 			WithContext(_ctx).Info(db.Error.Error(), zap.String("sql.info", sqlJson))
 		} else {
-			WithContext(_ctx).Error(db.Error.Error(), zap.Any("sql.info", sqlJson))
+			WithContext(_ctx).Error(db.Error.Error(), zap.String("sql.info", sqlJson))
 		}
 	}
 
