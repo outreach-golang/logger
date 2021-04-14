@@ -7,5 +7,5 @@ func (i SqlInfo) Set(key string, val interface{}) {
 }
 
 func (i SqlInfo) Get(key string) interface{} {
-	return i[key]
+	return i[key][0]
 }
