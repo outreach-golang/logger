@@ -3,6 +3,7 @@ package logger
 import (
 	"errors"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/outreach-golang/logger/gorm_V2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/buffer"
@@ -81,10 +82,12 @@ func after(db *gorm.DB) {
 	switch db.Error {
 	case nil:
 	default:
+		sqlJson, _ := jsoniter.MarshalToString(sqlInfo)
+
 		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
-			WithContext(_ctx).Info(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+			WithContext(_ctx).Info(db.Error.Error(), zap.String("sql.info", sqlJson))
 		} else {
-			WithContext(_ctx).Error(db.Error.Error(), zap.Any("sql.info", sqlInfo))
+			WithContext(_ctx).Error(db.Error.Error(), zap.Any("sql.info", sqlJson))
 		}
 	}
 
