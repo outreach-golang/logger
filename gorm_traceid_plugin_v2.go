@@ -73,7 +73,7 @@ func after(db *gorm.DB) {
 	sqlInfo.Set("Stack", utils.FileWithLineNum())
 	sqlInfo.Set("Rows", db.Statement.RowsAffected)
 	sqlInfo.Set("CostSeconds", time.Since(ts).Seconds())
-	sqlInfo.Set("Table", time.Since(ts).Seconds())
+	sqlInfo.Set("Table", db.Statement.Table)
 
 	//sqlInfo := &gorm_V2.SQL{}
 	//sqlInfo.Timestamp = CSTLayoutString()
