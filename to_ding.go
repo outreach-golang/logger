@@ -3,6 +3,7 @@ package logger
 import (
 	"bytes"
 	"context"
+	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -29,7 +30,7 @@ type toDing struct {
 }
 
 func (t *toDing) Write(p []byte) (n int, err error) {
-
+	fmt.Println(string(p))
 	msgToMap(t, p)
 
 	var (
