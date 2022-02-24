@@ -75,10 +75,12 @@ func after(db *gorm.DB) {
 	sqlInfo.Set("CostSeconds", time.Since(ts).Seconds())
 	sqlInfo.Set("Table", db.Statement.Table)
 
+	sqlJson, _ := jsoniter.MarshalToString(sqlInfo)
+
 	switch db.Error {
 	case nil:
+		WithContext(_ctx).Info(db.Error.Error(), zap.String("sql.info", sqlJson))
 	default:
-		sqlJson, _ := jsoniter.MarshalToString(sqlInfo)
 
 		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
 			WithContext(_ctx).Info(db.Error.Error(), zap.String("sql.info", sqlJson))
