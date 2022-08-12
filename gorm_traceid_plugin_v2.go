@@ -79,7 +79,7 @@ func after(db *gorm.DB) {
 
 	switch db.Error {
 	case nil:
-		WithContext(_ctx).Info(db.Error.Error(), zap.String("sql.info", sqlJson))
+		WithContext(_ctx).Info("SQL", zap.String("sql.info", sqlJson))
 	default:
 
 		if errors.Is(db.Error, gorm.ErrRecordNotFound) {
@@ -92,7 +92,7 @@ func after(db *gorm.DB) {
 	if sqlInfo.Get("CostSeconds").(float64) >= SlowSqlTime {
 		wbuff := buffer.Buffer{}
 		wbuff.AppendString(sql)
-		wbuff.AppendString("-----**执行时间：【 ")
+		wbuff.AppendString("\n\n> **执行时间：【 ")
 		wbuff.AppendFloat(sqlInfo.Get("CostSeconds").(float64), 64)
 		wbuff.AppendString(" 秒】**")
 
