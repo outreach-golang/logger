@@ -20,6 +20,7 @@ const (
 	File      SaveLogForm = iota
 	Ding
 	AliLog
+	OnlyAliLog
 )
 
 var GLogger *zap.Logger
@@ -83,6 +84,10 @@ func logger(configs *Config) (*zap.Logger, error) {
 		core = zapcore.NewTee(
 			WriteAliLog(configs.EnableLogLevel, encoder, configs),
 			WriteDing(zap.ErrorLevel, encoder, configs),
+		)
+	case OnlyAliLog:
+		core = zapcore.NewTee(
+			WriteAliLog(configs.EnableLogLevel, encoder, configs),
 		)
 	}
 
